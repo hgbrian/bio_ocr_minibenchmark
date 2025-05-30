@@ -10,7 +10,7 @@ I found that nothing worked for me, hence I made this small benchmark.
 
 ## Benchmark
 There are six images in the benchmark.
-Five were taken from four PDFs (details in `benchmark.csv`).
+Five were taken from four PDFs (details in `benchmark.yaml`).
 The remaining one is synthetic—I just typed some sequence into Google Docs.
 
 To run
@@ -28,12 +28,12 @@ Evaluation is a little tricky.
 OCR tools seem to often add whitespace, or get newlines wrong.
 It's unclear how much to penalize this.
 
-A Python script (`generate_results.py`) checks that each "word" in the answer txt
+A Python script (`benchmark.py`) checks that each "word" in the answer txt
 is present in the output of the tool.
 This is fairly lenient.
 
 ## Results
-Here are the current results from running `generate_results.py`.
+Here are the current results from running `benchmark.py`.
 
 | Model                        | image1 | image2 | image3 | image4 | image5 | image6 |
 | :--------------------------- | :----: | :----: | :----: | :----: | :----: | :----: |

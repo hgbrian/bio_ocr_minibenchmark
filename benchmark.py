@@ -1,4 +1,11 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# dependencies = [
+#     "polars",
+#     "pyyaml",
+# ]
+# ///
 """
 OCR Benchmark Evaluation Script (YAML-driven, CWD-relative paths)
 
@@ -24,7 +31,6 @@ To Run:
 """
 
 import re
-import glob
 from pathlib import Path
 import polars as pl
 import yaml
