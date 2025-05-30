@@ -10,7 +10,7 @@ I found that nothing worked for me, hence I made this small benchmark.
 
 ## Benchmark
 There are six images in the benchmark.
-Five were taken from four PDFs (details in `benchmark.yaml`).
+Five were taken from four PDFs (details in `benchmark_metadata.yaml`).
 The remaining one is synthetic—I just typed some sequence into Google Docs.
 
 To run
@@ -28,9 +28,9 @@ Evaluation is a little tricky.
 OCR tools seem to often add whitespace, or get newlines wrong.
 It's unclear how much to penalize this.
 
-A Python script (`benchmark.py`) checks that each "word" in the answer txt
-is present in the output of the tool.
-This is fairly lenient.
+A Python script (`benchmark.py`) checks that after removing all whitespace including newlines,
+and boilerplate in the case of EasyOCR,
+the text matches exactly.
 
 ## Results
 Here are the current results from running `benchmark.py`.
