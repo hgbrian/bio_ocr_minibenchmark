@@ -1,0 +1,20 @@
+|   |   |
+|---|---|
+|Lys|0.9682555913711465|
+|Glu Ser|0.7587181104639489|
+|Arg Ala Lys Lys Phe Gln Arg Gln His Met|0.717909503050017|
+|Asp Ser|0.9027941961572822|
+|16 Asp Ser Ser Pro Ser Ser Ser Ser Thr Tyr Cys Asn GIn Het|0.6365123004164521|
+|31 Arg Arg Arg Asn Met Thr Cln Gly Arg Cys Lya Pro Val Asn|0.5539523691556186|
+|46 Phe Val liis Glu Pro Leu Val|0.6608023494641897|
+|Asp Val Gln Asn Val Cyg Phe|0.6586121691094882|
+|61 Glu Lys Val Thr Cys Lys Asn Gly Glo Gly Aso Cys Tyr Lyb|0.4630038806591961|
+|Ser Met Hfs Ile Thr Asp Cys Arg Lcu Thr Asn Gly|0.3297415927064431|
+|91 Arg Tyr Pro Asn Cys Ale Tyr Arg Thr Ser Pro Ly: Glu Arg His|0.49010556967860797|
+|106 Ile Ile Val|0.8360566384097966|
+|Cys Glu Gly Ser|0.9648457926143432|
+|Tyr Val Pro|0.9486028142379183|
+|Val His Phe|0.7860152614756064|
+|Asp Ala Ser Val|0.7762190713297298|
+|Asp Ser|0.9800969013511405|
+|Kct|0.1624918241829093|

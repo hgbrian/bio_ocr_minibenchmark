@@ -1,0 +1,9 @@
+5 Lys Glu Ser Arg Ala Lys Lys Phe Asn Arg Gly Gln His Ile Ser Met Asp Ser Pro
+15 Asp Ser Ser Pro Ser Ser Ser Ser Ser Thr Tyr Thr Cys Asn Gly Met Ser
+31 Arg Arg Arg Arg Asn Met Thr Gln Gly Leu Gly Cys Lys Lys Pro Val Asn Thr
+46 Phe Val His Glu Pro Leu Val Val Asp Gln Asn Val Cys Phe Gly Lys
+61 Glu Lys Lys Val Thr Cys Lys Asn Gly Leu Gly Asn Cys Tyr Lys Ser Tyr Ser
+76 Asn Ser Ser Met His Ile Leu Thr Asp Arg Cys Arg Leu Glu Thr Arg Asn Gly Leu
+91 Arg Tyr Thr Pro Asn Cys Ala Tyr Tyr Arg Thr Gly Ser Pro Arg Lys Glu Glu Arg Gly His
+106 Ile Ile Leu Val Ala Cys Gly Gly Leu Ser Pro Tyr Tyr Thr Val Pro Val His Phe
+121 Asp Ala Ser Val Glu Glu Asp Ser
