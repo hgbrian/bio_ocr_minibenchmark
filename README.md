@@ -44,4 +44,4 @@ Here are the current results from running `benchmark.py`.
 | Le Chat                      |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |
 | EasyOCR                      |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅   |
 | OlmOCR                       |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |
-| Reducto                      |   ✅   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |
+| Reducto                      |   ✅   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅  |
