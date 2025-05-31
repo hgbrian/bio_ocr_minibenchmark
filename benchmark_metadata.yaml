@@ -49,6 +49,13 @@ ocr_programs:
     provider: "Allen Institute for AI"
     notes: "Specialized OCR model from AI2"
 
+  reducto:
+    name: "reducto"
+    url: "https://app.reducto.ai/"
+    type: "webapp"
+    provider: "Reducto"
+    notes: "OCR tool"
+
 images:
   image1:
     filename: "images/image1.png"

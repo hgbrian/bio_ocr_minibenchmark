@@ -65,8 +65,7 @@ def clean_text_for_direct_comparison(raw_lines, is_ocr_output=False):
     all_processed_line_segments = []
 
     for line_orig in raw_lines:
-        line_content = remove_filename_prefix(line_orig)
-        line_content = line_content.strip()
+        line_content = line_orig.strip()
 
         if not line_content:
             continue
@@ -120,7 +119,7 @@ def clean_text_for_direct_comparison(raw_lines, is_ocr_output=False):
                 current_segment = "".join(stripped_parts)
 
         if current_segment:
-            current_segment = re.sub(r"^\d+\s+", "", current_segment)
+            current_segment = re.sub(r"^\s+", "", current_segment)
             current_segment = current_segment.replace("`", "")
             all_processed_line_segments.append(current_segment)
 
@@ -140,12 +139,17 @@ def main():
 
     # Base directory for OCR outputs (relative to CWD)
     outputs_base_dir = Path("outputs")
+    answers_base_dir = Path("answers")  # Base directory for answers
 
     if not outputs_base_dir.exists():
         print(f"Error: Outputs base directory '{outputs_base_dir}' not found in CWD.")
         print(
             "Please create it or ensure your benchmark_metadata.yaml paths are correct."
         )
+        return
+
+    if not answers_base_dir.exists():
+        print(f"Error: Answers base directory '{answers_base_dir}' not found in CWD.")
         return
 
     all_results_long = []
@@ -180,8 +184,9 @@ def main():
         for image_key, image_meta in images_metadata.items():
             ocr_file_path = model_outputs_dir / f"{image_key}.txt"
 
-            ground_truth_path_str = image_meta.get("ground_truth")
-            if not ground_truth_path_str:
+            # Get primary ground truth path from YAML
+            primary_ground_truth_path_str = image_meta.get("ground_truth")
+            if not primary_ground_truth_path_str:
                 print(
                     f"  ❓ {image_key}: Ground truth path not defined in YAML. Skipping."
                 )
@@ -194,12 +199,30 @@ def main():
                 )
                 continue
 
-            # Assume ground_truth_path_str is relative to CWD if not absolute
-            truth_file_path = Path(ground_truth_path_str)
+            primary_truth_file_path = Path(primary_ground_truth_path_str)
+
+            # Construct paths for alternate truth files
+            # Assumes alt files are in the same directory as the primary truth file,
+            # and named like image1_alt1.txt, image1_alt2.txt etc.
+            truth_file_dir = primary_truth_file_path.parent
+            truth_file_stem = primary_truth_file_path.stem  # e.g., "image1"
+            truth_file_suffix = primary_truth_file_path.suffix  # e.g., ".txt"
+
+            possible_truth_paths = [primary_truth_file_path]
+            # Look for _altN.txt files
+            alt_truth_files = sorted(
+                list(truth_file_dir.glob(f"{truth_file_stem}_alt*{truth_file_suffix}"))
+            )
+            possible_truth_paths.extend(alt_truth_files)
+
+            # Filter to only existing truth paths
+            existing_truth_paths = [p for p in possible_truth_paths if p.exists()]
 
             reason_for_status = ""
             ocr_preview_on_mismatch = ""
-            truth_preview_on_mismatch = ""
+            truth_preview_on_mismatch = (
+                ""  # This will show preview against primary if all alts also mismatch
+            )
             match_status_symbol = "-"
 
             if not ocr_file_path.exists():
@@ -208,28 +231,33 @@ def main():
                 )
                 match_status_symbol = "NF"
                 reason_for_status = "OCR output file not found"
-            elif not truth_file_path.exists():
+            elif not existing_truth_paths:  # No primary or alt truth files found
                 print(
-                    f"  ❓ {image_key}: Truth file not found: {truth_file_path}. Skipping."
+                    f"  ❓ {image_key}: No ground truth files (primary or alts) found. Primary expected at: {primary_truth_file_path}. Skipping."
                 )
-                match_status_symbol = "❓T"
-                reason_for_status = "Truth file not found on disk"
+                match_status_symbol = "❓T_ALL"  # All truth files missing
+                reason_for_status = (
+                    "All truth files (primary and alts) not found on disk"
+                )
             else:
                 model_total_comparable += 1
+
+                final_ocr_string = ""
                 try:
                     with open(ocr_file_path, "r", encoding="utf-8") as f_ocr:
                         raw_ocr_lines = f_ocr.readlines()
-                    with open(truth_file_path, "r", encoding="utf-8") as f_truth:
-                        raw_truth_lines = f_truth.readlines()
+                    final_ocr_string = clean_text_for_direct_comparison(
+                        raw_ocr_lines, is_ocr_output=True
+                    )
                 except Exception as e:
-                    match_status_symbol = "ERR"
-                    reason_for_status = f"File Read Error: {e}"
-                    print(f"    ERR {image_key}: {reason_for_status}")
+                    match_status_symbol = "ERR_OCR"
+                    reason_for_status = f"OCR File Read/Process Error: {e}"
+                    print(f"    ERR_OCR {image_key}: {reason_for_status}")
                     detailed_mismatches.append(
                         {
                             "Model": model_name_display,
                             "Image": image_key,
-                            "Status": "Error",
+                            "Status": "Error_OCR",
                             "Reason": reason_for_status,
                             "OCR_Cleaned": "N/A",
                             "Truth_Cleaned": "N/A",
@@ -242,51 +270,90 @@ def main():
                             "MatchStatus": match_status_symbol,
                         }
                     )
-                    continue
+                    continue  # Skip to next image if OCR can't be processed
 
-                final_ocr_string = clean_text_for_direct_comparison(
-                    raw_ocr_lines, is_ocr_output=True
-                )
-                final_truth_string = clean_text_for_direct_comparison(
-                    raw_truth_lines, is_ocr_output=False
-                )
+                point_awarded = False
+                matched_alt_truth_path = None
 
-                point_awarded = final_ocr_string == final_truth_string
+                for current_truth_path_to_check in existing_truth_paths:
+                    try:
+                        with open(
+                            current_truth_path_to_check, "r", encoding="utf-8"
+                        ) as f_truth:
+                            raw_truth_lines = f_truth.readlines()
+                        current_final_truth_string = clean_text_for_direct_comparison(
+                            raw_truth_lines, is_ocr_output=False
+                        )
+                        if final_ocr_string == current_final_truth_string:
+                            point_awarded = True
+                            matched_alt_truth_path = current_truth_path_to_check
+                            break  # Found a match with an alt (or primary)
+                    except Exception as e:
+                        print(
+                            f"    WARN {image_key}: Error reading/processing truth file {current_truth_path_to_check}: {e}"
+                        )
+                        # Continue to try other alt truths if available
 
                 if point_awarded:
                     match_status_symbol = "✅"
                     reason_for_status = "Exact Match"
+                    if matched_alt_truth_path != primary_truth_file_path:
+                        reason_for_status += f" (with {matched_alt_truth_path.name})"
                     model_match_count += 1
                     print(f"  ✅ {image_key}: {reason_for_status}")
                 else:
+                    # Mismatch logic (compare against primary for detailed diff if no alts matched)
                     match_status_symbol = "❌"
-                    reason_for_status = "Mismatch"
+                    reason_for_status = "Mismatch (all truth versions)"
+
+                    # For detailed diff, use the primary truth file if it exists
+                    primary_truth_for_diff = ""
+                    if primary_truth_file_path.exists():
+                        try:
+                            with open(
+                                primary_truth_file_path, "r", encoding="utf-8"
+                            ) as f_primary_truth:
+                                raw_primary_truth_lines = f_primary_truth.readlines()
+                            primary_truth_for_diff = clean_text_for_direct_comparison(
+                                raw_primary_truth_lines, is_ocr_output=False
+                            )
+                        except Exception:
+                            primary_truth_for_diff = (
+                                "[Error reading primary truth for diff]"
+                            )
+
                     len_ocr = len(final_ocr_string)
-                    len_truth = len(final_truth_string)
+                    len_truth_for_diff = len(primary_truth_for_diff)
                     diff_idx = -1
-                    for i in range(min(len_ocr, len_truth)):
-                        if final_ocr_string[i] != final_truth_string[i]:
+                    for i in range(min(len_ocr, len_truth_for_diff)):
+                        if final_ocr_string[i] != primary_truth_for_diff[i]:
                             diff_idx = i
                             break
-                    if diff_idx == -1 and len_ocr != len_truth:
-                        diff_idx = min(len_ocr, len_truth)
+                    if diff_idx == -1 and len_ocr != len_truth_for_diff:
+                        diff_idx = min(len_ocr, len_truth_for_diff)
 
                     context = 20
                     if diff_idx != -1:
-                        reason_for_status += f" (diff near index {diff_idx})"
+                        reason_for_status += f" (diff near index {diff_idx} vs primary)"
                         ocr_preview_on_mismatch = f"...{final_ocr_string[max(0, diff_idx - context) : diff_idx + context + 1]}..."
-                        truth_preview_on_mismatch = f"...{final_truth_string[max(0, diff_idx - context) : diff_idx + context + 1]}..."
+                        truth_preview_on_mismatch = f"...{primary_truth_for_diff[max(0, diff_idx - context) : diff_idx + context + 1]}..."
                     else:
                         ocr_preview_on_mismatch = final_ocr_string[:50] + (
                             "..." if len_ocr > 50 else ""
                         )
-                        truth_preview_on_mismatch = final_truth_string[:50] + (
-                            "..." if len_truth > 50 else ""
+                        truth_preview_on_mismatch = primary_truth_for_diff[:50] + (
+                            "..." if len_truth_for_diff > 50 else ""
                         )
 
                     print(f"  ❌ {image_key}: {reason_for_status}")
-                    print(f"      OCR (len {len_ocr})  : {ocr_preview_on_mismatch}")
-                    print(f"      Truth (len {len_truth}): {truth_preview_on_mismatch}")
+                    if (
+                        primary_truth_file_path.exists()
+                    ):  # Only show diff if primary truth was available
+                        print(f"      OCR (len {len_ocr})  : {ocr_preview_on_mismatch}")
+                        print(
+                            f"      Truth (primary, len {len_truth_for_diff}): {truth_preview_on_mismatch}"
+                        )
+
                     detailed_mismatches.append(
                         {
                             "Model": model_name_display,
@@ -294,7 +361,7 @@ def main():
                             "Status": "Mismatch",
                             "Reason": reason_for_status,
                             "OCR_Cleaned": final_ocr_string,
-                            "Truth_Cleaned": final_truth_string,
+                            "Truth_Cleaned": primary_truth_for_diff,  # Show primary for diff
                             "OCR_Preview": ocr_preview_on_mismatch,
                             "Truth_Preview": truth_preview_on_mismatch,
                         }
@@ -397,8 +464,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # This script expects benchmark_metadata.yaml, outputs/, and answers/ to be in the
-    # current working directory from where the script is run.
-    # Dummy file creation is removed as it might be confusing if not intended.
-    # Ensure your files are set up before running.
     main()
