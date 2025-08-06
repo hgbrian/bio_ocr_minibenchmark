@@ -349,9 +349,14 @@ def main():
                     if (
                         primary_truth_file_path.exists()
                     ):  # Only show diff if primary truth was available
-                        print(f"      OCR (len {len_ocr})  : {ocr_preview_on_mismatch}")
+                        ocr_label = f"      OCR (len {len_ocr})"
+                        truth_label = f"      Truth (primary, len {len_truth_for_diff})"
+                        max_label_len = max(len(ocr_label), len(truth_label))
                         print(
-                            f"      Truth (primary, len {len_truth_for_diff}): {truth_preview_on_mismatch}"
+                            f"{ocr_label:<{max_label_len}} : {ocr_preview_on_mismatch}"
+                        )
+                        print(
+                            f"{truth_label:<{max_label_len}} : {truth_preview_on_mismatch}"
                         )
 
                     detailed_mismatches.append(

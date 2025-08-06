@@ -45,3 +45,4 @@ Here are the current results from running `benchmark.py`.
 | EasyOCR                      |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅   |
 | OlmOCR                       |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |
 | Reducto                      |   ✅   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅  |
+| Reducto                      |   x   |   ❌   |   ❌   |   ❌   |   ❌   |   x  |

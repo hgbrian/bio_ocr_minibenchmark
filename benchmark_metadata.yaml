@@ -56,6 +56,13 @@ ocr_programs:
     provider: "Reducto"
     notes: "OCR tool"
 
+  rednote:
+    name: "RedNote dots.ocr"
+    url: "https://dotsocr.xiaohongshu.com"
+    type: "webapp"
+    provider: "RedNote"
+    note: "via https://x.com/HKydlicek/status/1952726867020062979"
+
 images:
   image1:
     filename: "images/image1.png"
