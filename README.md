@@ -46,3 +46,4 @@ Here are the current results from running `benchmark.py`.
 | OlmOCR                       |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |
 | Reducto                      |   ✅   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅  |
 | RedNote dots.ocr             |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌  |
+| Tesseract.js                 |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅  |

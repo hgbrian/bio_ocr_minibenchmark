@@ -63,6 +63,13 @@ ocr_programs:
     provider: "RedNote"
     note: "via https://x.com/HKydlicek/status/1952726867020062979"
 
+  tesseract:
+    name: "Tesseract"
+    url: "https://robertknight.github.io/tesseract-wasm/"
+    type: "webapp"
+    provider: "Tesseract"
+    note: "OCR tool online"
+
 images:
   image1:
     filename: "images/image1.png"
