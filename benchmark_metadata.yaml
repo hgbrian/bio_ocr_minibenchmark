@@ -7,6 +7,13 @@ ocr_programs:
     provider: "Google"
     notes: "Advanced multimodal AI model with OCR capabilities"
 
+  gemini_3_pro_preview:
+    name: "Gemini 3 Pro Preview"
+    url: "https://aistudio.google.com/"
+    type: "webapp"
+    provider: "Google"
+    notes: "Advanced multimodal AI model with OCR capabilities"
+
   claude_sonnet_3_7:
     name: "Claude Sonnet 3.7"
     url: "https://claude.ai/"

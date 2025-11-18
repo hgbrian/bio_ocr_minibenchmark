@@ -35,6 +35,9 @@ the text matches exactly.
 ## Results
 Here are the current results from running `benchmark.py`.
 
+The current winner is Gemini 3 (3/6 correct).
+
+
 | Model                        | image1 | image2 | image3 | image4 | image5 | image6 |
 | :--------------------------- | :----: | :----: | :----: | :----: | :----: | :----: |
 | Gemini 2.5 Pro Preview 05-06 |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |
@@ -47,3 +50,4 @@ Here are the current results from running `benchmark.py`.
 | Reducto                      |   ✅   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅  |
 | RedNote dots.ocr             |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌  |
 | Tesseract.js                 |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅  |
+| Gemini 3 Pro Preview         |   ❌   |   ✅   |   ❌   |   ✅   |   ✅   |   ❌  |
