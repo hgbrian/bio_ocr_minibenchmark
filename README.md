@@ -13,6 +13,19 @@ There are six images in the benchmark.
 Five were taken from four PDFs (details in `benchmark_metadata.yaml`).
 The remaining one is synthetic—I just typed some sequence into Google Docs.
 
+<table>
+  <tr>
+    <td><img src="https://github.com/hgbrian/bio_ocr_minibenchmark/blob/main/images/image1.png" width="200"/></td>
+    <td><img src="https://github.com/hgbrian/bio_ocr_minibenchmark/blob/main/images/image2.jpg" width="200"/></td>
+    <td><img src="https://github.com/hgbrian/bio_ocr_minibenchmark/blob/main/images/image3.jpg" width="200"/></td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/hgbrian/bio_ocr_minibenchmark/blob/main/images/image4.png" width="200"/></td>
+    <td><img src="https://github.com/hgbrian/bio_ocr_minibenchmark/blob/main/images/image5.png" width="200"/></td>
+    <td><img src="https://github.com/hgbrian/bio_ocr_minibenchmark/blob/main/images/image6.png" width="200"/></td>
+  </tr>
+</table>
+
 To run
 ```
 uv run benchmark.py
