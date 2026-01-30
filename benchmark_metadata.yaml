@@ -77,6 +77,13 @@ ocr_programs:
     provider: "Tesseract"
     note: "OCR tool online"
 
+  paddleocr_vl_1_5:
+    name: "PaddleOCR-VL-1.5"
+    url: "https://huggingface.co/PaddlePaddle/PaddleOCR-VL-1.5"
+    type: "model"
+    provider: "PaddlePaddle"
+    notes: "0.9B VLM for document parsing via Modal"
+
 images:
   image1:
     filename: "images/image1.png"
