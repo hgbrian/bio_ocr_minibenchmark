@@ -64,4 +64,4 @@ The current winner is Gemini 3 (3/6 correct).
 | RedNote dots.ocr             |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌  |
 | Tesseract.js                 |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅  |
 | Gemini 3 Pro Preview         |   ❌   |   ✅   |   ❌   |   ✅   |   ✅   |   ❌  |
-| PaddleOCR-VL-1.5             |   ❌   |   ✅   |   ❌   |   x   |   x   |   ❌  |
+| PaddleOCR-VL-1.5             |   ❌   |   ✅   |   ❌   |   ❌   |   ❌   |   ❌  |
