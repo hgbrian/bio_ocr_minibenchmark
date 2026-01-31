@@ -34,6 +34,8 @@ import re
 from pathlib import Path
 import polars as pl
 import yaml
+from difflib2 import sndiff
+from dataclasses import dataclass
 
 
 def load_benchmark_config(config_path="benchmark_metadata.yaml"):
@@ -84,7 +86,7 @@ def clean_text_for_direct_comparison(raw_lines, is_ocr_output=False):
 
         if (
             any(
-                jp == temp_no_space_for_junk_check
+                jp in temp_no_space_for_junk_check
                 for jp in junk_phrases
                 if temp_no_space_for_junk_check
             )
@@ -127,6 +129,20 @@ def clean_text_for_direct_comparison(raw_lines, is_ocr_output=False):
     final_string_no_spaces = re.sub(r"\s+", "", full_text_blob)
 
     return final_string_no_spaces
+
+@dataclass
+class Comparison:
+    score: float = -1
+    diff: str = ''
+    truth: str = ''
+
+    def __str__(self):
+        if self.score == 1.0:
+            return "Operands match"
+        elif self.score > 0.7:
+            return f"Similarity:{self.score}\n{self.diff}"
+        else:
+            return f"Similarity:{self.score}"
 
 
 def main():
@@ -178,6 +194,7 @@ def main():
             continue
 
         model_match_count = 0
+        model_match_partial = 0
         model_total_comparable = 0
 
         # Iterate through images defined in YAML
@@ -241,7 +258,7 @@ def main():
                 )
             else:
                 model_total_comparable += 1
-
+                score = 0.0
                 final_ocr_string = ""
                 try:
                     with open(ocr_file_path, "r", encoding="utf-8") as f_ocr:
@@ -274,6 +291,7 @@ def main():
 
                 point_awarded = False
                 matched_alt_truth_path = None
+                scores = []
 
                 for current_truth_path_to_check in existing_truth_paths:
                     try:
@@ -287,7 +305,10 @@ def main():
                         if final_ocr_string == current_final_truth_string:
                             point_awarded = True
                             matched_alt_truth_path = current_truth_path_to_check
+                            scores.append(Comparison(1.0))
                             break  # Found a match with an alt (or primary)
+                        else:
+                            scores.append(Comparison(*sndiff(current_final_truth_string, final_ocr_string), current_final_truth_string))
                     except Exception as e:
                         print(
                             f"    WARN {image_key}: Error reading/processing truth file {current_truth_path_to_check}: {e}"
@@ -298,66 +319,31 @@ def main():
                     match_status_symbol = "✅"
                     reason_for_status = "Exact Match"
                     if matched_alt_truth_path != primary_truth_file_path:
-                        reason_for_status += f" (with {matched_alt_truth_path.name})"
-                    model_match_count += 1
+                        reason_for_status += f"(with {matched_alt_truth_path.name})"
+                    model_match_count += 1  
                     print(f"  ✅ {image_key}: {reason_for_status}")
                 else:
                     # Mismatch logic (compare against primary for detailed diff if no alts matched)
-                    match_status_symbol = "❌"
-                    reason_for_status = "Mismatch (all truth versions)"
-
-                    # For detailed diff, use the primary truth file if it exists
-                    primary_truth_for_diff = ""
-                    if primary_truth_file_path.exists():
-                        try:
-                            with open(
-                                primary_truth_file_path, "r", encoding="utf-8"
-                            ) as f_primary_truth:
-                                raw_primary_truth_lines = f_primary_truth.readlines()
-                            primary_truth_for_diff = clean_text_for_direct_comparison(
-                                raw_primary_truth_lines, is_ocr_output=False
-                            )
-                        except Exception:
-                            primary_truth_for_diff = (
-                                "[Error reading primary truth for diff]"
-                            )
-
-                    len_ocr = len(final_ocr_string)
-                    len_truth_for_diff = len(primary_truth_for_diff)
-                    diff_idx = -1
-                    for i in range(min(len_ocr, len_truth_for_diff)):
-                        if final_ocr_string[i] != primary_truth_for_diff[i]:
-                            diff_idx = i
-                            break
-                    if diff_idx == -1 and len_ocr != len_truth_for_diff:
-                        diff_idx = min(len_ocr, len_truth_for_diff)
-
-                    context = 20
-                    if diff_idx != -1:
-                        reason_for_status += f" (diff near index {diff_idx} vs primary)"
-                        ocr_preview_on_mismatch = f"...{final_ocr_string[max(0, diff_idx - context) : diff_idx + context + 1]}..."
-                        truth_preview_on_mismatch = f"...{primary_truth_for_diff[max(0, diff_idx - context) : diff_idx + context + 1]}..."
+                    best = Comparison(float("nan"), "(not attempted)", "(not used)")
+                    if len(scores) > 0:
+                        best = max(scores, key=lambda x:x.score)
+                    
+                    if best.score != best.score:
+                        match_status_symbol = "❔"
+                        reason_for_status = "(not attempted)"
+                    elif best.score > 0.7:
+                        match_status_symbol = "❌"
+                        reason_for_status = "(good effort)"
                     else:
-                        ocr_preview_on_mismatch = final_ocr_string[:50] + (
-                            "..." if len_ocr > 50 else ""
-                        )
-                        truth_preview_on_mismatch = primary_truth_for_diff[:50] + (
-                            "..." if len_truth_for_diff > 50 else ""
-                        )
+                        match_status_symbol = "💣"
+                        reason_for_status = "(terrible)"
 
-                    print(f"  ❌ {image_key}: {reason_for_status}")
-                    if (
-                        primary_truth_file_path.exists()
-                    ):  # Only show diff if primary truth was available
-                        ocr_label = f"      OCR (len {len_ocr})"
-                        truth_label = f"      Truth (primary, len {len_truth_for_diff})"
-                        max_label_len = max(len(ocr_label), len(truth_label))
-                        print(
-                            f"{ocr_label:<{max_label_len}} : {ocr_preview_on_mismatch}"
-                        )
-                        print(
-                            f"{truth_label:<{max_label_len}} : {truth_preview_on_mismatch}"
-                        )
+                    if best.score > 0:
+                        model_match_partial += best.score
+                        score = best.score
+
+                    
+                    print(f"  {match_status_symbol} {image_key}: {reason_for_status}")
 
                     detailed_mismatches.append(
                         {
@@ -366,9 +352,11 @@ def main():
                             "Status": "Mismatch",
                             "Reason": reason_for_status,
                             "OCR_Cleaned": final_ocr_string,
-                            "Truth_Cleaned": primary_truth_for_diff,  # Show primary for diff
-                            "OCR_Preview": ocr_preview_on_mismatch,
-                            "Truth_Preview": truth_preview_on_mismatch,
+                            "Truth_Cleaned": best.truth,  # Show primary for diff
+                            # "OCR_Preview": ocr_preview_on_mismatch,
+                            # "Truth_Preview": truth_preview_on_mismatch,
+                            "Score": best.score,
+                            "Diff": best.diff
                         }
                     )
 
@@ -377,14 +365,19 @@ def main():
                     "Model": model_name_display,
                     "Image": image_key,
                     "MatchStatus": match_status_symbol,
+                    "Score": score,
                 }
             )
 
         if model_total_comparable > 0:
             accuracy = (model_match_count / model_total_comparable) * 100
+
             print(
-                f"  Model {model_name_display} Summary: {model_match_count}/{model_total_comparable} matched ({accuracy:.2f}%)"
+                f"  Model {model_name_display} Summary: {model_match_count}/{model_total_comparable} matched ({accuracy:.2f}%)."
             )
+            if model_total_comparable > model_match_count:
+                fuzz = (model_match_partial / (model_total_comparable - model_match_count))
+            print(f"  Mistakes are on average {fuzz:.2f}% correct.")
         elif any(img_meta.get("ground_truth") for img_meta in images_metadata.values()):
             print(
                 f"  Model {model_name_display} Summary: No comparable images processed (check OCR output files or truth files)."
@@ -394,6 +387,7 @@ def main():
         print("No results to process into a table.")
         return
 
+    pl.Config.set_tbl_rows(20)   # That will be enough for a while
     print("\n" + "=" * 30 + " Detailed Match Matrix " + "=" * 30)
     df_long = pl.DataFrame(all_results_long)
 
@@ -429,8 +423,8 @@ def main():
             "Image",
             "Status",
             "Reason",
-            "OCR_Preview",
-            "Truth_Preview",
+            "Score",
+            "Diff",
         ]
         final_mismatch_cols = []
         for col in mismatch_cols_order:
@@ -443,21 +437,30 @@ def main():
 
     print("\n" + "=" * 30 + " Summary Per Model (Accuracy) " + "=" * 30)
     if df_long.height > 0:
-        df_for_accuracy = df_long.filter(pl.col("MatchStatus").is_in(["✅", "❌"]))
+        df_for_accuracy = df_long.filter(pl.col("MatchStatus").is_in(["✅", "❌", "💣", "❔"]))
 
         if df_for_accuracy.height > 0:
             summary_df = (
                 df_for_accuracy.group_by("Model")
                 .agg(
                     (pl.col("MatchStatus") == "✅").sum().alias("Points"),
+                    (pl.col("MatchStatus").is_in(["❌", "💣", "❔"])).sum().alias("Fails"),
+                    pl.col("Score").sum().alias("Partials"),
                     pl.len().alias("TotalComparableImages"),
                 )
                 .with_columns(
                     (pl.col("Points") / pl.col("TotalComparableImages") * 100)
                     .round(2)
-                    .alias("Accuracy (%)")
+                    .alias("Exact (%)"),
+                    (pl.col("Partials") / pl.col("TotalComparableImages"))
+                    .round(2)
+                    .alias("Fuzz Acc (%)")
                 )
-                .sort("Accuracy (%)", descending=True)
+                .with_columns(
+                    (pl.col("Exact (%)")+pl.col("Fuzz Acc (%)")).alias("Total Acc (%)")
+                )
+                .drop("Partials")
+                .sort("Exact (%)", descending=True)
             )
             print(summary_df)
         else:
