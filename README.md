@@ -48,7 +48,7 @@ the text matches exactly.
 ## Results
 Here are the current results from running `benchmark.py`.
 
-The current winner is Gemini 3 (3/6 correct).
+Gemini 3 Pro and Claude Opus 4.7 are currently tied at 3/6.
 
 
 | Model                        | image1 | image2 | image3 | image4 | image5 | image6 |
@@ -56,6 +56,7 @@ The current winner is Gemini 3 (3/6 correct).
 | Gemini 2.5 Pro Preview 05-06 |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |
 | Claude Sonnet 3.7            |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |
 | Claude Opus 4                |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |
+| Claude Opus 4.7              |   ❌   |   ✅   |   ✅   |   ✅   |   ❌   |   ❌   |
 | Google Translate             |   ❌   |   ❌   |   ❌   |   ❌   |   ✅   |   ❌   |
 | Le Chat                      |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |
 | EasyOCR                      |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅   |
