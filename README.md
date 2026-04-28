@@ -66,3 +66,4 @@ Gemini 3 Pro and Claude Opus 4.7 are currently tied at 3/6.
 | Tesseract.js                 |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ✅  |
 | Gemini 3 Pro Preview         |   ❌   |   ✅   |   ❌   |   ✅   |   ✅   |   ❌  |
 | PaddleOCR-VL-1.5             |   ❌   |   ✅   |   ❌   |   ❌   |   ❌   |   ❌  |
+| GPT-5.5                      |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌  |
