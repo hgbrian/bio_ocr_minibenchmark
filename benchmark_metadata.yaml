@@ -91,6 +91,13 @@ ocr_programs:
     provider: "OpenAI"
     notes: "GPT-5.5 via local Codex CLI, prompt 'transcribe to plain text'"
 
+  gemma_4_31b:
+    name: "Gemma 4 31B"
+    url: "https://openrouter.ai/google/gemma-4-31b-it"
+    type: "api"
+    provider: "Google (via OpenRouter)"
+    notes: "Gemma 4 31B instruction-tuned, prompt 'transcribe to plain text'"
+
   paddleocr_vl_1_5:
     name: "PaddleOCR-VL-1.5"
     url: "https://huggingface.co/PaddlePaddle/PaddleOCR-VL-1.5"
