@@ -68,3 +68,4 @@ Gemini 3 Pro and Claude Opus 4.7 are currently tied at 3/6.
 | PaddleOCR-VL-1.5             |   ❌   |   ✅   |   ❌   |   ❌   |   ❌   |   ❌  |
 | GPT-5.5                      |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌  |
 | Gemma 4 31B                  |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌  |
+| Claude Fable 5               |   ❌   |   ✅   |   ❌   |   ✅   |   ❌   |   ❌  |

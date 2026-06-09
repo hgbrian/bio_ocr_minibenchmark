@@ -35,6 +35,13 @@ ocr_programs:
     provider: "Anthropic"
     notes: "Claude Opus 4.7 via API with adaptive thinking"
 
+  claude_fable_5:
+    name: "Claude Fable 5"
+    url: "https://api.anthropic.com/v1/messages"
+    type: "api"
+    provider: "Anthropic"
+    notes: "Claude Fable 5 via API with adaptive thinking"
+
   google_translate:
     name: "Google Translate"
     url: "https://translate.google.com/?sl=ga&tl=en&op=images"
