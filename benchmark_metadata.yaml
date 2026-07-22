@@ -98,6 +98,13 @@ ocr_programs:
     provider: "OpenAI"
     notes: "GPT-5.5 via local Codex CLI, prompt 'transcribe to plain text'"
 
+  gpt_5_6_sol_high:
+    name: "GPT-5.6-sol (high)"
+    url: "https://github.com/openai/codex"
+    type: "cli"
+    provider: "OpenAI"
+    notes: "GPT-5.6-sol via local Codex CLI with high reasoning effort; direct visual transcription with tools explicitly prohibited"
+
   gemma_4_31b:
     name: "Gemma 4 31B"
     url: "https://openrouter.ai/google/gemma-4-31b-it"

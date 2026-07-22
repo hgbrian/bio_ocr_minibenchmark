@@ -48,7 +48,7 @@ the text matches exactly.
 ## Results
 Here are the current results from running `benchmark.py`.
 
-Gemini 3 Pro and Claude Opus 4.7 are currently tied at 3/6.
+GPT-5.6-sol (high), Gemini 3 Pro, and Claude Opus 4.7 are currently tied at 3/6.
 
 
 | Model                        | image1 | image2 | image3 | image4 | image5 | image6 |
@@ -67,5 +67,6 @@ Gemini 3 Pro and Claude Opus 4.7 are currently tied at 3/6.
 | Gemini 3 Pro Preview         |   ❌   |   ✅   |   ❌   |   ✅   |   ✅   |   ❌  |
 | PaddleOCR-VL-1.5             |   ❌   |   ✅   |   ❌   |   ❌   |   ❌   |   ❌  |
 | GPT-5.5                      |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌  |
+| GPT-5.6-sol (high)           |   ✅   |   ❌   |   ❌   |   ✅   |   ✅   |   ❌  |
 | Gemma 4 31B                  |   ❌   |   ❌   |   ❌   |   ❌   |   ❌   |   ❌  |
 | Claude Fable 5               |   ❌   |   ✅   |   ❌   |   ✅   |   ❌   |   ❌  |
